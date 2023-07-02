@@ -1,0 +1,10 @@
+/.idea
+/_dev
+/_docs
+/ci
+.editorconfig
+.gitignore
+.go.mod
+.npmignore
+Taskfile.yaml
+/react-client

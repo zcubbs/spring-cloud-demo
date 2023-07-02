@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  postgres:
+    image: sbom-postgres
+    build: .
+    environment:
+      - "POSTGRES_MULTIPLE_DATABASES=auth,requests"
+      - "POSTGRES_USER=postgres"
+      - "POSTGRES_PASSWORD=postgres"
+    ports:
+      - "5432:5432"

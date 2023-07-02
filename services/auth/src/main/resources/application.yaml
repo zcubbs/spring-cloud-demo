@@ -1,0 +1,36 @@
+server:
+  port: ${PORT:9000}
+  error:
+    include-binding-errors: always
+    include-message: always
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.security.oauth2: INFO
+    com.netflix.discovery: WARN
+
+info:
+  tags:
+    environment: dev
+
+management:
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  endpoint:
+    health.show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,refresh,keepalive"
+
+client:
+  url: http://127.0.0.1:3000
+
+issuer:
+  url: http://127.0.0.1:8080/auth

@@ -1,0 +1,57 @@
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+          lower-case-service-id: true
+
+
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+      routes:
+        - id: auth
+          uri: lb://auth
+          predicates:
+            - Path=/auth/**
+          filters:
+            - RewritePath=/auth/(?<remaining>.*), /${remaining}
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 20
+                redis-rate-limiter.burstCapacity: 40
+                redis-rate-limiter.requestedTokens: 1
+                redis-rate-limiter.keyResolver: "#{@keyResolver}"
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+management:
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  endpoint:
+    health.show-details: ${HEALTH_SHOW_DETAILS:NEVER}
+    gateway:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        #        include: "health,info,refresh,keepalive,gateway,prometheus"
+        include: ${ENDPOINT_INCLUDE:health,refresh,keepalive,gateway}
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+info:
+  tags:
+    environment: ${ENVIRONMENT:dev}

@@ -1,0 +1,22 @@
+spring:
+  cloud:
+    kubernetes:
+      config:
+        enabled: false
+      discovery:
+        enabled: false
+  config:
+    import: optional:configserver:http://localhost:8888
+  application:
+    name: gateway
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:8761/eureka/
+    enabled: true
+server:
+  port: 8080

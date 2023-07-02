@@ -1,0 +1,92 @@
+version: '3'
+
+env:
+  GOOS: "{{OS}}"
+
+# ----------------------------------------------------------
+## Main commands
+# task ci # Run CI pipeline to build Images
+# task run # Run the project containers
+# task build # Build the project
+# task dev-containers:up # Start development containers
+# ----------------------------------------------------------
+
+tasks:
+  build:
+    cmds:
+      - task: build:init-maven-container
+      - task: build:maven
+
+  build:init-maven-container:
+    cmds:
+      - cmd: docker volume create maven-repo
+      - cmd: docker build -t maven-builder -f ./_dev/maven/Dockerfile ./_dev/maven
+
+  build:maven:
+    cmds:
+      - cmd: >
+          docker run --rm 
+          -v "${PWD}:/work"
+          -v "maven-repo:/root/.m2"
+          -w "/work" 
+          maven-builder 
+          mvn -DskipTests=true clean install package
+
+  docs:
+    dir: "_docs"
+    cmds:
+      - cmd: yarn install
+      - cmd: yarn start
+
+  docs:serve:
+    dir: "_docs"
+    cmds:
+      - cmd: yarn install
+      - cmd: yarn build
+      - cmd: yarn serve
+
+  dev-containers:up:
+    cmds:
+      - task: db:up
+      - task: redis:up
+      - task: mailhog:up
+
+  dev-containers:down:
+    cmds:
+      - task: db:down
+      - task: redis:down
+      - task: mailhog:down
+
+  db:up:
+    dir: "_dev/postgres"
+    cmds:
+      - cmd: docker-compose up -d
+
+  db:down:
+    dir: "_dev/postgres"
+    cmds:
+      - cmd: docker-compose down
+
+  redis:up:
+    dir: "_dev/redis"
+    cmds:
+      - cmd: docker-compose up -d
+
+  redis:down:
+    dir: "_dev/redis"
+    cmds:
+      - cmd: docker-compose down
+
+  mailhog:up:
+    dir: "_dev/mailhog"
+    cmds:
+      - cmd: docker-compose up -d
+
+  mailhog:down:
+    dir: "_dev/mailhog"
+    cmds:
+      - cmd: docker-compose down
+
+  ci:
+    cmds:
+      - cmd: go run ci/main.go
