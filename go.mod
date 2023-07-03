@@ -2,9 +2,10 @@ module github.com/zcubbs/spring-cloud-demo
 
 go 1.20
 
-require dagger.io/dagger v0.7.2
+require github.com/zcubbs/dagger-utils v1.0.10
 
 require (
+	dagger.io/dagger v0.7.2 // indirect
 	github.com/99designs/gqlgen v0.17.2 // indirect
 	github.com/Khan/genqlient v0.5.0 // indirect
 	github.com/adrg/xdg v0.4.0 // indirect

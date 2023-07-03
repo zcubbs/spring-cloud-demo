@@ -1,32 +1,23 @@
 package main
 
 import (
-	"context"
-	"dagger.io/dagger"
-	"fmt"
-	"os"
+	"github.com/zcubbs/dagger-utils/maven"
 )
 
 func main() {
-	ctx := context.Background()
-
-	// initialize Dagger client
-	client, err := dagger.Connect(ctx, dagger.WithLogOutput(os.Stdout))
+	err := buildMavenProject()
 	if err != nil {
 		panic(err)
 	}
-	defer client.Close()
+}
 
-	// use a golang:1.19 container
-	// get version
-	// execute
-	golang := client.Container().From("golang:1.20").WithExec([]string{"go", "version"})
+func buildMavenProject() error {
+	mvnBuilder := maven.Builder{}
 
-	version, err := golang.Stdout(ctx)
+	err := mvnBuilder.MavenBuild(true)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	// print output
-	fmt.Println("GO Version: " + version)
+	return nil
 }
